@@ -25,14 +25,12 @@ while improving and modernizing its functions.
 - [ ] C++23 modernization
 
 ## Build
+**Windows (CMD):**
 ```bash
 g++ -o raytracerpp main.cpp -std=c++23
+.\raytracerpp > output.ppm
 ```
-
-## Usage
-```bash
-./raytracerpp > output.ppm
-```
+The output will be saved as `output.ppm` in PPM format.
 
 ## Based On
 [Ray Tracing in One Weekend](https://raytracing.github.io/)
