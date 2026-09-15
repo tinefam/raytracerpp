@@ -6,8 +6,12 @@
 #include "sphere.h"
 #include "material.h"
 
+#include "timer.h"
+
 int main()
 {
+    Timer t1("Time needed");
+
     hittable_list world;
 
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
