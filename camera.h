@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "timer.h"
+
 #include "color.h"
 #include "hittable.h"
 #include "material.h"
@@ -27,6 +29,7 @@ public:
     {
         initialize();
 
+        Timer t1("Rendering time");
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
         for (int j = 0; j < image_height; j++)
@@ -46,7 +49,7 @@ public:
             }
         }
 
-        std::clog << "\rDone.           \n";
+        std::clog << "\rDone.                     \n";
     }
 
 private:

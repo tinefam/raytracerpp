@@ -21,7 +21,7 @@ while improving and modernizing its functions.
 ## In Development
 - [ ] PNG output format (with format selection option)
 - [ ] Multi-threading optimization
-- [ ] Performance timer
+- [X] Performance timer
 - [ ] C++23 modernization
 
 ## Build
