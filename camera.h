@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <functional>
+#include <syncstream>
 
 #include "timer.h"
 
@@ -56,6 +57,8 @@ public:
 
     void division_thread(std::vector<color>& grid, const hittable& world)
     {
+        std::atomic<unsigned int> scan_remaining(image_height);
+
         auto num_threads = n_thread();
 
         auto image_height_portion = int(image_height / num_threads);
@@ -68,10 +71,10 @@ public:
 
         for (int i = 0; i < num_threads - 1; i++)
         {
-            threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion , std::ref(grid), std::cref(world)));
+            threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion , std::ref(grid), std::cref(world), std::ref(scan_remaining)));
             start += image_height_portion;
         }
-        threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world)));
+        threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world), std::ref(scan_remaining)));
     }
 
 private:
@@ -183,10 +186,13 @@ private:
         return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
 
-    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world)
+    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining)
     {
+        Timer timer_thread("\nThread: ");
         for (; r_start < r_end; r_start++)
         {
+            std::osyncstream(std::clog) << "\rScanlines remaining: " << scan_remaining << ' ' << std::flush;
+
             for (int i = 0; i < image_width; i++)
             {
                 color pixel_color(0,0,0);
@@ -199,6 +205,8 @@ private:
 
                 vec[r_start * image_width + i] = pixel_samples_scale * pixel_color;
             }
+
+            scan_remaining--;
         }
     }
 };
