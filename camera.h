@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <thread>
+#include <functional>
 
 #include "timer.h"
 
@@ -9,6 +10,14 @@
 #include "hittable.h"
 #include "material.h"
 #include "vec3.h"
+
+// Thread
+inline unsigned int n_thread()
+{
+    const unsigned int threads = std::thread::hardware_concurrency();
+    return threads < 1 ? 1 : threads;
+}
+
 
 class camera
 {
@@ -35,7 +44,7 @@ public:
 
         std::vector<color> grid(image_width * image_height);
 
-        thread_grid(0, image_height, grid, world);
+        division_thread(grid, world);
 
         for (int i = 0; i < image_width * image_height; i++)
         {
@@ -43,6 +52,26 @@ public:
         }
 
         std::clog << "\rDone.                     \n";
+    }
+
+    void division_thread(std::vector<color>& grid, const hittable& world)
+    {
+        auto num_threads = n_thread();
+
+        auto image_height_portion = int(image_height / num_threads);
+
+        auto extra_portion = image_height % num_threads;
+
+        int start = 0;
+
+        std::vector<std::jthread> threads;
+
+        for (int i = 0; i < num_threads - 1; i++)
+        {
+            threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion , std::ref(grid), std::cref(world)));
+            start += image_height_portion;
+        }
+        threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world)));
     }
 
 private:
@@ -173,10 +202,3 @@ private:
         }
     }
 };
-
-// Thread
-inline unsigned int n_thread()
-{
-    const unsigned int threads = std::thread::hardware_concurrency();
-    return threads < 1 ? 1 : threads;
-}
