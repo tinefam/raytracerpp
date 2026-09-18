@@ -34,23 +34,7 @@ public:
 
         std::vector<color> grid(image_width * image_height);
 
-        for (int j = 0; j < image_height; j++)
-        {
-            std::clog << "\rScanlines remaining: " << (image_height - j) << ' ' << std::flush;
-
-            for (int i = 0; i < image_width; i++)
-            {
-                color pixel_color(0,0,0);
-
-                for (int sample = 0; sample < samples_per_pixel; sample++)
-                {
-                    ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, max_depth, world);
-                }
-
-                grid[j * image_width + i] = pixel_samples_scale * pixel_color;
-            }
-        }
+        thread_grid(0, image_height, grid, world);
 
         for (int i = 0; i < image_width * image_height; i++)
         {
@@ -164,5 +148,26 @@ private:
         vec3 unit_direction = unit_vector(r.direction());
         auto a = 0.5*(unit_direction.y() + 1.0);
         return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
+    }
+
+    // Thread
+
+    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world)
+    {
+        for (; r_start < r_end; r_start++)
+        {
+            for (int i = 0; i < image_width; i++)
+            {
+                color pixel_color(0,0,0);
+
+                for (int sample = 0; sample < samples_per_pixel; sample++)
+                {
+                    ray r = get_ray(i, r_start);
+                    pixel_color += ray_color(r, max_depth, world);
+                }
+
+                vec[r_start * image_width + i] = pixel_samples_scale * pixel_color;
+            }
+        }
     }
 };
