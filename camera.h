@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <thread>
 
 #include "timer.h"
 
@@ -54,6 +55,9 @@ private:
     vec3 u, v, w; // Camera frame basis vectors
     vec3 defocus_disk_u; // Defocus disk horizontal radius
     vec3 defocus_disk_v; // Defocus disk vertical radius
+
+
+
 
     void initialize()
     {
@@ -150,8 +154,6 @@ private:
         return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
 
-    // Thread
-
     void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world)
     {
         for (; r_start < r_end; r_start++)
@@ -171,3 +173,10 @@ private:
         }
     }
 };
+
+// Thread
+inline unsigned int n_thread()
+{
+    const unsigned int threads = std::thread::hardware_concurrency();
+    return threads < 1 ? 1 : threads;
+}
