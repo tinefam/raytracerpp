@@ -27,10 +27,29 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> start;
 };
 
+class ThreadTimer
+{
+public:
+    ThreadTimer()
+    {
+        start = std::chrono::steady_clock::now();
+    }
+
+    double elapsed()
+    {
+        auto end = std::chrono::steady_clock::now();
+        std::chrono::duration<double> duration = end - start;
+        return duration.count();
+    }
+
+private:
+    const std::chrono::time_point<std::chrono::steady_clock> start;
+};
+
 struct ThreadTimerInfo
 {
     std::thread::id id;
-    double time;
+    std::chrono::duration<double> time;
 };
 
 
