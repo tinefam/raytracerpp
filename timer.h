@@ -4,6 +4,7 @@
 #include <iostream>
 #include <format>
 #include <string>
+#include <thread>
 
 class Timer
 {
@@ -24,6 +25,12 @@ private:
     std::string label;
 
     std::chrono::time_point<std::chrono::steady_clock> start;
+};
+
+struct ThreadTimerInfo
+{
+    std::thread::id id;
+    double time;
 };
 
 
