@@ -19,9 +19,11 @@ while improving and modernizing its functions.
 - PPM image output
 
 ## In Development
-- [ ] PNG output format (with format selection option)
-- [ ] Multi-threading optimization
+- [ ] PNG output format
+    - [ ] Selection between PPM/PNG
+- [X] Multi-threading optimization
 - [X] Performance timer
+  - [ ] Per-thread timing breakdown on completion
 - [ ] C++23 modernization
 
 ## Build
