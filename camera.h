@@ -19,7 +19,6 @@ inline unsigned int n_thread()
     return threads < 1 ? 1 : threads;
 }
 
-
 class camera
 {
 public:
@@ -87,9 +86,6 @@ private:
     vec3 u, v, w; // Camera frame basis vectors
     vec3 defocus_disk_u; // Defocus disk horizontal radius
     vec3 defocus_disk_v; // Defocus disk vertical radius
-
-
-
 
     void initialize()
     {
@@ -188,7 +184,7 @@ private:
 
     void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining)
     {
-        Timer timer_thread("\nThread: ");
+        Timer timer_thread("\nThread");
         for (; r_start < r_end; r_start++)
         {
             std::osyncstream(std::clog) << "\rScanlines remaining: " << scan_remaining << ' ' << std::flush;
@@ -205,7 +201,6 @@ private:
 
                 vec[r_start * image_width + i] = pixel_samples_scale * pixel_color;
             }
-
             scan_remaining--;
         }
     }
