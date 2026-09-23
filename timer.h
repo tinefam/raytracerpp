@@ -43,13 +43,13 @@ public:
     }
 
 private:
-    const std::chrono::time_point<std::chrono::steady_clock> start;
+    std::chrono::time_point<std::chrono::steady_clock> start;
 };
 
 struct ThreadTimerInfo
 {
     std::thread::id id;
-    std::chrono::duration<double> time;
+    double time;
 };
 
 
