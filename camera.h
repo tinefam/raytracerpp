@@ -1,14 +1,6 @@
 #pragma once
 
-#include <iostream>
-#include <thread>
-#include <functional>
-#include <syncstream>
-
-#include "timer.h"
-
 #include "color.h"
-#include "hittable.h"
 #include "material.h"
 #include "vec3.h"
 
@@ -17,6 +9,7 @@ class camera
 public:
     double aspect_ratio = 1.0; // Ratio of image width over height
     int image_width = 100; // Rendered image width in pixel count
+    int image_height = 100; // Rendered image height
     int samples_per_pixel = 10; // Count of random samples for each pixel
     int max_depth = 10; // Maximum number of ray bounces into scene
     double pixel_samples_scale; // Color scale factor for a sum of pixel samples
@@ -28,57 +21,6 @@ public:
 
     double defocus_angle = 0; // Variation angle of rays through each pixel
     double focus_dist = 10; // Distance from camera lookfrom point to plane of perfect focus
-
-    void render(const hittable& world)
-    {
-        initialize();
-
-        timer t1("Rendering time");
-        std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
-
-        std::vector<color> grid(image_width * image_height);
-        std::vector<thread_timer_info> thread_timers;
-
-        division_thread(grid, world, thread_timers);
-
-        for (int i = 0; i < image_width * image_height; i++)
-        {
-            write_color(std::cout, grid[i]);
-        }
-
-        std::clog << "\n";
-
-        for (auto x : thread_timers)
-        {
-            std::clog <<  std::format("Thread [ID: {}]: {:.3f}s\n", x.id, x.time);
-        }
-
-        std::clog << "\nDone.                     \n";
-    }
-
-    void division_thread(std::vector<color>& grid, const hittable& world, std::vector<thread_timer_info>& thread_timers)
-    {
-        std::atomic<unsigned int> scan_remaining(image_height);
-
-        auto num_threads = n_thread();
-
-        thread_timers.resize(num_threads);
-
-        auto image_height_portion = int(image_height / num_threads);
-
-        auto extra_portion = image_height % num_threads;
-
-        int start = 0;
-
-        std::vector<std::jthread> threads;
-
-        for (int i = 0; i < num_threads - 1; i++)
-        {
-            threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion , std::ref(grid), std::cref(world), std::ref(scan_remaining), std::ref(thread_timers), i));
-            start += image_height_portion;
-        }
-        threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world), std::ref(scan_remaining), std::ref(thread_timers), num_threads-1));
-    }
 
     ray get_ray(int i, int j) const
     {
@@ -96,16 +38,6 @@ public:
 
         return ray(ray_origin, ray_direction);
     }
-
-private:
-    int image_height = 100; // Rendered image height
-    point3 center; // Camera center
-    point3 pixel00_loc; // Location of pixel 0, 0
-    vec3 pixel_delta_u; // Offset to pixel to the right
-    vec3 pixel_delta_v; // Offset to pixel below
-    vec3 u, v, w; // Camera frame basis vectors
-    vec3 defocus_disk_u; // Defocus disk horizontal radius
-    vec3 defocus_disk_v; // Defocus disk vertical radius
 
     void initialize()
     {
@@ -146,6 +78,15 @@ private:
         defocus_disk_v = v * defocus_radius;
     }
 
+private:
+    point3 center; // Camera center
+    point3 pixel00_loc; // Location of pixel 0, 0
+    vec3 pixel_delta_u; // Offset to pixel to the right
+    vec3 pixel_delta_v; // Offset to pixel below
+    vec3 u, v, w; // Camera frame basis vectors
+    vec3 defocus_disk_u; // Defocus disk horizontal radius
+    vec3 defocus_disk_v; // Defocus disk vertical radius
+
     vec3 sample_square() const
     {
         // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square
@@ -157,55 +98,5 @@ private:
         //Returns a random point in the camera defocus disk
         auto p = random_in_unit_disk();
         return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
-    }
-
-    color ray_color(const ray& r, int depth, const hittable& world) const
-    {
-        // If we've exceeded the ray bounce limit, no more light is gathered
-        if (depth <= 0)
-        {
-            return color(0,0,0);
-        }
-
-        hit_record rec;
-
-        if (world.hit(r, interval(0.001, infinity), rec))
-        {
-            ray scattered;
-            color attenuation;
-            if (rec.mat->scatter(r, rec, attenuation, scattered))
-            {
-                return attenuation * ray_color(scattered, depth - 1, world);
-            }
-            return color(0,0,0);
-        }
-
-        vec3 unit_direction = unit_vector(r.direction());
-        auto a = 0.5*(unit_direction.y() + 1.0);
-        return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
-    }
-
-    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining, std::vector<thread_timer_info>& all_timer, int n)
-    {
-        thread_timer time;
-        for (; r_start < r_end; r_start++)
-        {
-            std::osyncstream(std::clog) << "\rScanlines remaining: " << scan_remaining << ' ' << std::flush;
-
-            for (int i = 0; i < image_width; i++)
-            {
-                color pixel_color(0,0,0);
-
-                for (int sample = 0; sample < samples_per_pixel; sample++)
-                {
-                    ray r = get_ray(i, r_start);
-                    pixel_color += ray_color(r, max_depth, world);
-                }
-
-                vec[r_start * image_width + i] = pixel_samples_scale * pixel_color;
-            }
-            scan_remaining--;
-        }
-        all_timer[n] = {std::this_thread::get_id(), time.elapsed()};
     }
 };
