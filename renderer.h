@@ -9,6 +9,12 @@
 #include "hittable.h"
 #include "timer.h"
 
+inline unsigned int available_threads()
+{
+    const unsigned int threads = std::thread::hardware_concurrency();
+    return threads < 1 ? 1 : threads;
+}
+
 class renderer
 {
 public:
@@ -38,3 +44,4 @@ private:
 
     }
 };
+
