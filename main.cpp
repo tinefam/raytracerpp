@@ -1,12 +1,11 @@
 #include "rtow.h"
 
+#include "renderer.h"
 #include "camera.h"
 #include "hittable.h"
 #include "hittable_list.h"
 #include "sphere.h"
 #include "material.h"
-
-#include "timer.h"
 
 int main()
 {
@@ -66,5 +65,8 @@ int main()
 
     cam.defocus_angle = 0.6;
     cam.focus_dist    = 10.0;
-    cam.render(world);
+
+    renderer n1(cam, world);
+
+    n1.render();
 }
