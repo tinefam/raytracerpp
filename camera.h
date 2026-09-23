@@ -39,11 +39,11 @@ public:
     {
         initialize();
 
-        Timer t1("Rendering time");
+        timer t1("Rendering time");
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
         std::vector<color> grid(image_width * image_height);
-        std::vector<ThreadTimerInfo> thread_timers;
+        std::vector<thread_timer_info> thread_timers;
 
         division_thread(grid, world, thread_timers);
 
@@ -62,7 +62,7 @@ public:
         std::clog << "\nDone.                     \n";
     }
 
-    void division_thread(std::vector<color>& grid, const hittable& world, std::vector<ThreadTimerInfo>& thread_timers)
+    void division_thread(std::vector<color>& grid, const hittable& world, std::vector<thread_timer_info>& thread_timers)
     {
         std::atomic<unsigned int> scan_remaining(image_height);
 
@@ -192,9 +192,9 @@ private:
         return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
 
-    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining, std::vector<ThreadTimerInfo>& thread_timer, int n)
+    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining, std::vector<thread_timer_info>& all_timer, int n)
     {
-        ThreadTimer time;
+        thread_timer time;
         for (; r_start < r_end; r_start++)
         {
             std::osyncstream(std::clog) << "\rScanlines remaining: " << scan_remaining << ' ' << std::flush;
@@ -213,6 +213,6 @@ private:
             }
             scan_remaining--;
         }
-        thread_timer[n] = {std::this_thread::get_id(), time.elapsed()};
+        all_timer[n] = {std::this_thread::get_id(), time.elapsed()};
     }
 };

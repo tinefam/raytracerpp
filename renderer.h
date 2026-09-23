@@ -4,18 +4,22 @@
 #include <vector>
 #include <thread>
 
-#include <camera.h>
-#include <color.h>
-#include <hittable.h>
-#include <timer.h>
+#include "camera.h"
+#include "color.h"
+#include "hittable.h"
+#include "timer.h"
 
-class Renderer
+class renderer
 {
 public:
-    // TODO: Constructor
+    renderer(camera& cam, const hittable& world) : cam(cam), world(world) {};
 
-    // TODO: Render
+    void render()
+    {
+
+    }
 
 private:
-    // TODO: Members
+    camera& cam;
+    world& world;
 };

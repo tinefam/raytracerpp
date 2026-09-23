@@ -6,15 +6,15 @@
 #include <string>
 #include <thread>
 
-class Timer
+class timer
 {
 public:
-    Timer(const std::string &label) : label(label)
+    timer(const std::string &label) : label(label)
     {
         start = std::chrono::steady_clock::now();
     }
 
-    ~Timer()
+    ~timer()
     {
         const auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double> duration = end - start;
@@ -27,10 +27,10 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> start;
 };
 
-class ThreadTimer
+class thread_timer
 {
 public:
-    ThreadTimer()
+    thread_timer()
     {
         start = std::chrono::steady_clock::now();
     }
@@ -46,7 +46,7 @@ private:
     std::chrono::time_point<std::chrono::steady_clock> start;
 };
 
-struct ThreadTimerInfo
+struct thread_timer_info
 {
     std::thread::id id;
     double time;
