@@ -43,22 +43,32 @@ public:
         std::cout << "P3\n" << image_width << ' ' << image_height << "\n255\n";
 
         std::vector<color> grid(image_width * image_height);
+        std::vector<ThreadTimerInfo> thread_timers;
 
-        division_thread(grid, world);
+        division_thread(grid, world, thread_timers);
 
         for (int i = 0; i < image_width * image_height; i++)
         {
             write_color(std::cout, grid[i]);
         }
 
-        std::clog << "\rDone.                     \n";
+        std::clog << "\n";
+
+        for (auto x : thread_timers)
+        {
+            std::clog <<  std::format("Thread [ID: {}]: {:.3f}s\n", x.id, x.time);
+        }
+
+        std::clog << "\nDone.                     \n";
     }
 
-    void division_thread(std::vector<color>& grid, const hittable& world)
+    void division_thread(std::vector<color>& grid, const hittable& world, std::vector<ThreadTimerInfo>& thread_timers)
     {
         std::atomic<unsigned int> scan_remaining(image_height);
 
         auto num_threads = n_thread();
+
+        thread_timers.resize(num_threads);
 
         auto image_height_portion = int(image_height / num_threads);
 
@@ -70,10 +80,10 @@ public:
 
         for (int i = 0; i < num_threads - 1; i++)
         {
-            threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion , std::ref(grid), std::cref(world), std::ref(scan_remaining)));
+            threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion , std::ref(grid), std::cref(world), std::ref(scan_remaining), std::ref(thread_timers), i));
             start += image_height_portion;
         }
-        threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world), std::ref(scan_remaining)));
+        threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world), std::ref(scan_remaining), std::ref(thread_timers), num_threads-1));
     }
 
 private:
@@ -182,9 +192,9 @@ private:
         return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
 
-    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining)
+    void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining, std::vector<ThreadTimerInfo>& thread_timer, int n)
     {
-        Timer timer_thread("\nThread");
+        ThreadTimer time;
         for (; r_start < r_end; r_start++)
         {
             std::osyncstream(std::clog) << "\rScanlines remaining: " << scan_remaining << ' ' << std::flush;
@@ -203,5 +213,6 @@ private:
             }
             scan_remaining--;
         }
+        thread_timer[n] = {std::this_thread::get_id(), time.elapsed()};
     }
 };
