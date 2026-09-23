@@ -28,12 +28,12 @@ private:
 
     std::atomic<unsigned int> scan_remaining; // Multithread remaining scans counter
 
-    void division_thread()
+    void dispatch_thread_render()
     {
 
     }
 
-    void thread_grid(int r_start, int r_end, int n)
+    void render_scanlines(int r_start, int r_end, int n)
     {
 
     }
