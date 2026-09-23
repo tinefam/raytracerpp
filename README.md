@@ -23,7 +23,7 @@ while improving and modernizing its functions.
     - [ ] Selection between PPM/PNG
 - [X] Multi-threading optimization
 - [X] Performance timer
-  - [ ] Per-thread timing breakdown on completion
+  - [X] Per-thread timing breakdown on completion
 - [ ] C++23 modernization
 
 ## Build
