@@ -158,7 +158,7 @@ private:
         // Returns the vector to a random point in the [-.5,-.5]-[+.5,+.5] unit square
         return vec3(random_double() - 0.5, random_double() - 0.5, 0);
     }
-
+// test
     point3 defocus_disk_sample() const
     {
         //Returns a random point in the camera defocus disk
