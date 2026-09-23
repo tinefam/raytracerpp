@@ -26,6 +26,7 @@ public:
     int image_width = 100; // Rendered image width in pixel count
     int samples_per_pixel = 10; // Count of random samples for each pixel
     int max_depth = 10; // Maximum number of ray bounces into scene
+    double pixel_samples_scale; // Color scale factor for a sum of pixel samples
 
     double vfov = 90; // Vertical view angle (field of view)
     point3 lookfrom = point3(0,0,0); // Point camera is looking from
@@ -86,9 +87,34 @@ public:
         threads.push_back(std::jthread(&camera::thread_grid, this, start, start + image_height_portion + extra_portion, std::ref(grid), std::cref(world), std::ref(scan_remaining), std::ref(thread_timers), num_threads-1));
     }
 
+    color ray_color(const ray& r, int depth, const hittable& world) const
+    {
+        // If we've exceeded the ray bounce limit, no more light is gathered
+        if (depth <= 0)
+        {
+            return color(0,0,0);
+        }
+
+        hit_record rec;
+
+        if (world.hit(r, interval(0.001, infinity), rec))
+        {
+            ray scattered;
+            color attenuation;
+            if (rec.mat->scatter(r, rec, attenuation, scattered))
+            {
+                return attenuation * ray_color(scattered, depth - 1, world);
+            }
+            return color(0,0,0);
+        }
+
+        vec3 unit_direction = unit_vector(r.direction());
+        auto a = 0.5*(unit_direction.y() + 1.0);
+        return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
+    }
+
 private:
     int image_height = 100; // Rendered image height
-    double pixel_samples_scale; // Color scale factor for a sum of pixel samples
     point3 center; // Camera center
     point3 pixel00_loc; // Location of pixel 0, 0
     vec3 pixel_delta_u; // Offset to pixel to the right
@@ -164,32 +190,6 @@ private:
         //Returns a random point in the camera defocus disk
         auto p = random_in_unit_disk();
         return center + (p[0] * defocus_disk_u) + (p[1] * defocus_disk_v);
-    }
-
-    color ray_color(const ray& r, int depth, const hittable& world) const
-    {
-        // If we've exceeded the ray bounce limit, no more light is gathered
-        if (depth <= 0)
-        {
-            return color(0,0,0);
-        }
-
-        hit_record rec;
-
-        if (world.hit(r, interval(0.001, infinity), rec))
-        {
-            ray scattered;
-            color attenuation;
-            if (rec.mat->scatter(r, rec, attenuation, scattered))
-            {
-                return attenuation * ray_color(scattered, depth - 1, world);
-            }
-            return color(0,0,0);
-        }
-
-        vec3 unit_direction = unit_vector(r.direction());
-        auto a = 0.5*(unit_direction.y() + 1.0);
-        return(1.0-a) * color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
 
     void thread_grid(int r_start, int r_end, std::vector<color>& vec, const hittable& world, std::atomic<unsigned int>& scan_remaining, std::vector<thread_timer_info>& all_timer, int n)
