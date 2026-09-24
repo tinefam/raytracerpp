@@ -3,8 +3,8 @@
 A ray tracing engine based on "Ray Tracing in One Weekend" with extended features, built in modern C++. 
 
 My first project on github, after studying RTOW. Experimenting with Git,
-external libraries and trying to improve the efficiency of the raytracer
-while improving and modernizing its functions.
+external libraries. Trying to improve the efficiency of the raytracer
+while improving and modernizing its functions. First time experimenting "actively" with CMake.
 
 
 ## Standard Features
