@@ -21,7 +21,7 @@ while improving and modernizing its functions. First time experimenting "activel
 ## In Development
 - [ ] PNG output format
     - [ ] Selection between PPM/PNG
-    - [ ] CMake implementation
+- [X] CMake implementation
 - [X] Multi-threading optimization
 - [X] Performance timer
   - [X] Per-thread timing breakdown on completion
