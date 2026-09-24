@@ -21,6 +21,7 @@ while improving and modernizing its functions.
 ## In Development
 - [ ] PNG output format
     - [ ] Selection between PPM/PNG
+    - [ ] CMake implementation
 - [X] Multi-threading optimization
 - [X] Performance timer
   - [X] Per-thread timing breakdown on completion
