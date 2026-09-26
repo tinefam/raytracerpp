@@ -1,13 +1,13 @@
 # raytracerpp
 
-A ray tracing engine based on "Ray Tracing in One Weekend" with extended features, built in modern C++. 
+A raytracer based on "Ray Tracing in One Weekend" with extended features, built in modern C++. 
 
-My first project on github, after studying RTOW. Experimenting with Git,
-external libraries. Trying to improve the efficiency of the raytracer
-while improving and modernizing its functions. First time experimenting "actively" with CMake.
+My first project on GitHub, after studying RTOW. Experimenting for the first time with Git, CMake, external libraries 
+and multithreading. Improving the efficiency of the raytracer and its architecture while modernizing and improving
+its functions.
 
 
-## Standard Features
+## Features from Ray Tracing in One Weekend
 - Ray casting and rendering
 - Sphere geometry
 - Diffuse (matte) materials
@@ -18,13 +18,13 @@ while improving and modernizing its functions. First time experimenting "activel
 - Defocus blur (depth of field)
 - PPM image output
 
-## In Development
-- [X] PNG output format
+## My Extensions
+- [x] PNG output format
   - [ ] Selection between PPM/PNG
-- [X] CMake implementation
-- [X] Multi-threading optimization
-- [X] Performance timer
-  - [X] Per-thread timing breakdown on completion
+- [x] CMake implementation
+- [x] Multi-threading optimization
+- [x] Performance timer
+  - [x] Per-thread execution time reported on completion
 - [ ] C++23 modernization
 
 ## Build
