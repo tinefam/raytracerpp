@@ -32,9 +32,21 @@ public:
 
         dispatch_thread_render();
 
+        // PPM
         for (auto x : grid)
         {
-            write_color(std::cout, x);
+            write_color_ppm(std::cout, x);
+        }
+
+        // PNG
+        std::vector<unsigned char> pixels(cam.image_width * cam.image_height * 3);
+
+        for (int i = 0; i < cam.image_width * cam.image_height; i++)
+        {
+            auto bytes = raw_color_bytes(grid[i]);
+            pixels[3*i] = bytes[0];
+            pixels[3*i+1] = bytes[1];
+            pixels[3*i+2] = bytes[2];
         }
 
         std::clog << "\n";
