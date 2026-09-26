@@ -11,7 +11,6 @@
 #include "timer.h"
 #include "stb_image_write.h"
 
-
 inline unsigned int available_threads()
 {
     const unsigned int threads = std::thread::hardware_concurrency();
@@ -50,6 +49,8 @@ public:
             pixels[3*i+1] = bytes[1];
             pixels[3*i+2] = bytes[2];
         }
+
+        stbi_write_png("output.png", cam.image_width, cam.image_height, 3, pixels.data(), cam.image_width * 3);
 
         std::clog << "\n";
 
