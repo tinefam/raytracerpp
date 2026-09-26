@@ -9,6 +9,8 @@
 #include "color.h"
 #include "hittable.h"
 #include "timer.h"
+#include "stb_image_write.h"
+
 
 inline unsigned int available_threads()
 {

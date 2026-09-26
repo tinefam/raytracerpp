@@ -7,6 +7,9 @@
 #include "sphere.h"
 #include "material.h"
 
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
+
 int main()
 {
     hittable_list world;
