@@ -2,7 +2,6 @@
 
 #include "interval.h"
 #include "vec3.h"
-#include "camera.h"
 
 #include <array>
 

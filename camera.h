@@ -1,6 +1,5 @@
 #pragma once
 
-#include "color.h"
 #include "material.h"
 #include "vec3.h"
 
