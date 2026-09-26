@@ -19,7 +19,7 @@ while improving and modernizing its functions. First time experimenting "activel
 - PPM image output
 
 ## In Development
-- [ ] PNG output format
+- [X] PNG output format
   - [ ] Selection between PPM/PNG
 - [X] CMake implementation
 - [X] Multi-threading optimization
