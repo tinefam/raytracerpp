@@ -20,7 +20,7 @@ while improving and modernizing its functions. First time experimenting "activel
 
 ## In Development
 - [ ] PNG output format
-    - [ ] Selection between PPM/PNG
+  - [ ] Selection between PPM/PNG
 - [X] CMake implementation
 - [X] Multi-threading optimization
 - [X] Performance timer
@@ -37,4 +37,7 @@ The output will be saved as `output.ppm` in PPM format.
 
 ## Based On
 [Ray Tracing in One Weekend](https://raytracing.github.io/)
+
+## Third-Party Libraries
+- [stb_image_write.h](https://github.com/nothings/stb) by Sean Barrett — used for PNG export (MIT License / public domain)
 
